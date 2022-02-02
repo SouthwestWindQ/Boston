@@ -1,5 +1,5 @@
-# thank hw a million times!!!!!
 from enum import EnumMeta
+from re import M
 import torch, sys
 import numpy as np
 import torch.nn as nn
@@ -8,19 +8,24 @@ from sklearn.preprocessing import MinMaxScaler
 from matplotlib import pyplot as plt
 from torch.utils.data import Dataset, DataLoader, TensorDataset
 import torch.nn.functional as fun
-from sklearn.datasets import fetch_california_housing
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib import cm
 from torchvision import datasets, transforms
-from tqdm import tqdm
+from tqdm import tqdm   #python进度条！
+
 class MyModel(nn.Module):
-    def __init__(self, reluN):
+    def __init__(self, reluN1, reluN2, reluN3):
         super(MyModel,self).__init__()
         self.net = nn.Sequential(
-            nn.Linear(784,reluN),
+            nn.Linear(784,reluN1),
             nn.ReLU(),
-            nn.Linear(reluN,10),
+            nn.Linear(reluN1,reluN2),
+            nn.ReLU(),
+            nn.Linear(reluN2,reluN3),
+            nn.ReLU(),
+            nn.Linear(reluN3,10)
             # nn.Softmax(dim=1) 最好不要在forward里写softmax, 读一下nn.CrossEntropyLoss的文档，想想如果这里写了softmax会有什么问题。
+            # nn.CrossEntropyLoss的文档中已经指明，它会将LogSoftmax和loss结合在一起，所以如果重复写softmax则分量间差距会更大，学习效果降低
         )
     def forward(self,x):
         return self.net(x.view(-1,784))
@@ -32,7 +37,7 @@ train_loader = DataLoader(
             transforms.Normalize((0.1037,),(0.3081,))
         ])),
     batch_size=64, shuffle=True, drop_last=False
-)
+) #drop_last指的是，如果batch_size不整除数据总量，那余下的部分是否丢弃
 test_loader = DataLoader(
     datasets.MNIST('data', train=False, download=True, 
         transform=transforms.Compose([
@@ -46,8 +51,8 @@ iter_loss = []
 batch_loss = []
 avg_list = []
 acc_list = []
-epoN = 20
-model = MyModel(256).to('cpu')
+epoN = 50
+model = MyModel(256,256,256).to('cpu')
 criterion = nn.CrossEntropyLoss()
 optimizer = torch.optim.Adam(model.parameters())
 # model.net2 = model.net2.double()
@@ -55,7 +60,7 @@ optimizer = torch.optim.Adam(model.parameters())
 sum = 0
 for epoch in range(epoN):
     model.train()
-    progress_bar = tqdm(train_loader, total =len(train_loader))
+    progress_bar = tqdm(train_loader, total =len(train_loader)) #进度条，使进度的显示更清晰，学习！
     cor,tot = 0,0
     for x,y in progress_bar:
         optimizer.zero_grad()
@@ -66,9 +71,9 @@ for epoch in range(epoN):
         loss.backward()
         optimizer.step()
 
-        cor += (pred.max(1)[1] == y).sum().item()
+        cor += (pred.max(1)[1] == y).sum().item()  #学习这种简省的写法！
         tot += x.shape[0]
-        progress_bar.set_description('Epoch [{}/{}] | loss: {:.3f} | acc: {:.3f}'.format(epoch+1, epoN, loss.item(), cor/tot))
+        progress_bar.set_description('Train | epoch [{}/{}] | loss: {:.3f} | acc: {:.3f}'.format(epoch+1, epoN, loss.item(), cor/tot))
 
     iter_loss.append(np.average(np.array(batch_loss)))
         
@@ -95,22 +100,20 @@ for epoch in range(epoN):
             total_loss += loss.cpu().item()*len(x)
             cor += (pred.max(1)[1] == y).sum().item()
             tot += x.shape[0]
-            progress_bar.set_description('Epoch [{}/{}] | loss: {:.3f} | acc: {:.3f}'.format(epoch+1, epoN, loss.item(), cor/tot))
+            progress_bar.set_description('Test  | epoch [{}/{}] | loss: {:.3f} | acc: {:.3f}'.format(epoch+1, epoN, loss.item(), cor/tot))
             
     avg_loss = total_loss / len(test_loader.dataset)
     avg_list.append(avg_loss)
-    print(tot,cor)
     acc_list.append(cor/tot)
-    print(avg_loss)
 
-x = np.array([i for i in range(1,21)])
+x = np.array([i for i in range(1,epoN+1)])
 # y1 = np.array(iter_loss)
 y2 = np.array(acc_list)
 # plt.scatter(x,y1)
 plt.scatter(x,y2)
 plt.show()
 
-x = np.array([i for i in range(1,21)])
+x = np.array([i for i in range(1,epoN+1)])
 y1 = np.array(iter_loss)
 y2 = np.array(avg_list)
 plt.scatter(x,y1)
