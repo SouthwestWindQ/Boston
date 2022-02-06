@@ -39,21 +39,21 @@ class Decoder(nn.Module):
     def forward(self,x):
         return self.net(x)
 
-train_loader = DataLoader(
-    datasets.MNIST('data', train=True, download=True,
+train_set = datasets.MNIST('data', train=True, download=True,
         transform=transforms.Compose([
             transforms.ToTensor(),
             transforms.Normalize((0.1037,),(0.3081,))
-        ])),
-    batch_size=64, shuffle=True, drop_last=False
+        ]))
+test_set = datasets.MNIST('data', train=False, download=True,
+        transform=transforms.Compose([
+            transforms.ToTensor(),
+            transforms.Normalize((0.1037,),(0.3081,))
+        ]))
+train_loader = DataLoader(
+    dataset=train_set, batch_size=64, shuffle=True, drop_last=False
 )
 test_loader = DataLoader(
-    datasets.MNIST('data', train=False, download=True,
-        transform=transforms.Compose([
-            transforms.ToTensor(),
-            transforms.Normalize((0.1037,),(0.3081,))
-        ])),
-    batch_size=64, shuffle=True, drop_last=False
+    dataset=test_set, batch_size=64, shuffle=True, drop_last=False
 )
         
 epoN = 30
@@ -96,20 +96,15 @@ for x,y in progress_bar:
         progress_bar.set_description('Test  | loss: {:.3f}'.format(np.average(np.array(batch_loss))))
 test_loss.append(np.average(np.array(batch_loss)))
 
-mnist = datasets.MNIST('data', train=False, download=True,
-        transform=transforms.Compose([
-            transforms.ToTensor(),
-            transforms.Normalize((0.1037,),(0.3081,))
-        ]))
 fig,ax = plt.subplots(nrows=2,ncols=10,sharex='all',sharey='all')
 ax = ax.flatten()
 for i in range(10):
-    img = mnist[i][0].view(28,28)
+    img = test_set[i][0].view(28,28)
     ax[i].set_title('Pic {}'.format(i+1))
     ax[i].imshow(img,cmap='gray')
 for i in range(10):
     with torch.no_grad():
-        code = encoder(mnist[i][0].view(1,1,28,28))
+        code = encoder(test_set[i][0].view(1,1,28,28))
         img = decoder(code).view(28,28)
         ax[10+i].set_title("Pic {}'".format(i+1))
         ax[10+i].imshow(img,cmap='gray')
