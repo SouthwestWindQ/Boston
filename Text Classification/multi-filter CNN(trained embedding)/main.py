@@ -1,15 +1,10 @@
 import torch
 import numpy as np
 import torch.nn as nn
-import pandas as pd
 from sklearn.preprocessing import MinMaxScaler
-from matplotlib import pyplot as plt
 from torch.utils.data import Dataset, DataLoader, TensorDataset
 from tensorboardX import SummaryWriter
 import torch.nn.functional as F
-from mpl_toolkits.mplot3d import Axes3D
-from matplotlib import cm
-from torchvision import datasets, transforms
 from tqdm import tqdm   #python进度条！
 import jieba
 
@@ -73,9 +68,9 @@ def coding(sentences,maxlen):
         code_list.append(codes)
     return torch.tensor(code_list)
 
-train_data = open("../data/train.txt","r", encoding='utf-8').read()
-dev_data = open("../data/dev.txt","r", encoding='utf-8').read()
-test_data = open("../data/test.txt","r", encoding='utf-8').read()
+train_data = open("./data/train.txt","r", encoding='utf-8').read()
+dev_data = open("./data/dev.txt","r", encoding='utf-8').read()
+test_data = open("./data/test.txt","r", encoding='utf-8').read()
 train_words = jieba.lcut(train_data)
 dev_words = jieba.lcut(dev_data)
 test_words = jieba.lcut(test_data)
@@ -155,15 +150,6 @@ for epoch in range(epoN):
     writer.add_scalar('Accuracy',cor/tot,epoch+1)
 
 writer.close()
-# plt.scatter(x,y2)
-# plt.show()
-
-# x = np.array([i for i in range(1,epoN+1)])
-# y1 = np.array(iter_loss)
-# y2 = np.array(dev_loss)
-# plt.scatter(x,y1)
-# plt.scatter(x,y2)
-# plt.show()
 
 model.eval()
 cor,tot,batch_loss = 0,0,[]
