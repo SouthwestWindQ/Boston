@@ -1,7 +1,6 @@
 import torch
 import numpy as np
 import torch.nn as nn
-from sklearn.preprocessing import MinMaxScaler
 from torch.utils.data import Dataset, DataLoader, TensorDataset
 from tensorboardX import SummaryWriter
 import torch.nn.functional as F
