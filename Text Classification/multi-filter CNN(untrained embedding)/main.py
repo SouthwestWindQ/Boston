@@ -70,18 +70,9 @@ def coding(sentences,maxlen):
         code_list.append(codes)
     return code_list
 
-train_data = open(
-    "/Users/qianweinan/Desktop/git repos/ML-pytorch/Text Classification/data/train.txt",
-    "r", encoding='utf-8'
-).read()
-dev_data = open(
-    "/Users/qianweinan/Desktop/git repos/ML-pytorch/Text Classification/data/dev.txt",
-    "r", encoding='utf-8'
-).read()
-test_data = open(
-    "/Users/qianweinan/Desktop/git repos/ML-pytorch/Text Classification/data/test.txt",
-    "r", encoding='utf-8'
-).read()
+train_data = open("../data/train.txt","r", encoding='utf-8').read()
+dev_data = open("../data/dev.txt","r", encoding='utf-8').read()
+test_data = open("../data/test.txt","r", encoding='utf-8').read()
 train_words = jieba.lcut(train_data)
 dev_words = jieba.lcut(dev_data)
 test_words = jieba.lcut(test_data)
