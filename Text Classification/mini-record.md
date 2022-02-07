@@ -39,7 +39,7 @@
   </tr>
 </table>
 
-观察epoch和验证集准确率的关系统计图（见"multi-filter CNN(trained embedding)/"文件夹），最后发现epoch取200应该是比较合适的，因为epoch过大之后验证集准确率的提升并不显著。
+观察epoch和验证集准确率的关系统计图（见"`./multi-filter CNN(trained embedding)/`"文件夹），最后发现epoch取200应该是比较合适的，因为epoch过大之后验证集准确率的提升并不显著。
 
 
 
