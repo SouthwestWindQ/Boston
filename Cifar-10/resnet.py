@@ -109,8 +109,8 @@ test_loader = DataLoader(
                 std=(0.2023, 0.1994, 0.2010),
             ) # 注意input image是三通道的，所以mean和std需要三维
         ])),
-    batch_size=128, shuffle=True, drop_last=False,
-)
+    batch_size=128, shuffle=False, drop_last=False,
+) # 测试数据集不需要打乱
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 iter_loss = []
@@ -145,7 +145,7 @@ for epoch in range(epoN):
         pred = model(x)
         loss = criterion(pred, y)
         batch_loss.append(loss.data.cpu().numpy())
-        loss.cpu().backward()
+        loss.backward()
         optimizer.step()
         scheduler.step()
         cor += (pred.max(1)[1] == y).sum().item() 
