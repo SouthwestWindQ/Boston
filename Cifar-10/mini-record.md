@@ -2,7 +2,7 @@
 
 #### 模型
 
-模型的搭建完全按照 <a href="https://arxiv.org/abs/1512.03385">Deep Residual Learning for Image Recognition</a> 中的4.2节进行，选取的网络是论文中的ResNet-110（即 $n=18$ ），首先会经过一层卷积层与batch norm，然后依次经过3个layer，每个layer有36层卷积层，且后两个layer的第一层卷积层用于压缩大小（直接用 $1\times1$ 的卷积核，`stride=2` 的卷积层进行），不断缩小图片，最后经过一层average池化+一层full connected得到最终的预测结果（10维tensor）。loss采用cross entropy。
+模型的搭建完全按照 <a href="https://arxiv.org/abs/1512.03385">Deep Residual Learning for Image Recognition</a> 中的4.2节进行，选取的网络是论文中的ResNet-110（即 $n=18$ ），首先会经过一层卷积层，然后依次经过3个layer，每个layer有36层卷积层，且后两个layer的第一层卷积层用于压缩大小（直接用 $1\times1$ 的卷积核，`stride=2` 的卷积层进行），不断缩小图片，最后经过一层average池化+一层full connected得到最终的预测结果（10维tensor）。loss采用cross entropy。
 
 #### 实验结果
 
